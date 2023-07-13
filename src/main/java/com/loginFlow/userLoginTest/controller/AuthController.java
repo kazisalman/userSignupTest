@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.loginFlow.userLoginTest.dto.UserLoginDto;
 import com.loginFlow.userLoginTest.dto.UserSignupDto;
+import com.loginFlow.userLoginTest.dto.verifyOtp;
 import com.loginFlow.userLoginTest.repository.UserRepository;
 import com.loginFlow.userLoginTest.service.AuthService;
 import com.loginFlow.userLoginTest.utils.ResponseHandler;
@@ -27,9 +28,18 @@ public class AuthController {
 
     @PostMapping("signup")
     public ResponseEntity<Object> singup(@RequestBody UserSignupDto request) {
-        // return ResponseHandler.generateResponse("Successfull", HttpStatus.OK, null);
         try {
             String message = authService.signup(request);
+            return ResponseHandler.generateResponse(message, HttpStatus.OK, null);
+        } catch (Exception e) {
+            return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.MULTI_STATUS, null);
+        }
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<Object> verifyOtp(@RequestBody verifyOtp request) {
+        try {
+            String message = authService.verifyOtp(request);
             return ResponseHandler.generateResponse(message, HttpStatus.OK, null);
         } catch (Exception e) {
             return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.MULTI_STATUS, null);

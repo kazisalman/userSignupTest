@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.loginFlow.userLoginTest.dto.UserLoginDto;
 import com.loginFlow.userLoginTest.dto.UserSignupDto;
+import com.loginFlow.userLoginTest.dto.verifyOtp;
 import com.loginFlow.userLoginTest.model.User;
 import com.loginFlow.userLoginTest.repository.UserRepository;
 import com.loginFlow.userLoginTest.utils.MailService;
@@ -92,7 +93,6 @@ public class AuthService {
             }
         }
 
-        
         List<User> customers = userRepository.findByMobile(request.mobile());
         if (customers.isEmpty()) {
             return "User doesn't exist";
@@ -110,4 +110,36 @@ public class AuthService {
 
     }
 
+    public String verifyOtp(verifyOtp request) {
+
+        if (request.email() != null && request.email() != "") {
+            List<User> customers = userRepository.findByEmail(request.email());
+            if (customers.isEmpty()) {
+                return "User doesn't exist";
+            }
+            User user = customers.get(0);
+            if (request.otp() == user.getOtp()) {
+                User customer = new User();
+                customer.setVerified(1);
+                userRepository.save(customer);
+
+                return "Successfully verified";
+            }
+            return "Invalid otp";
+        }
+
+        List<User> customers = userRepository.findByMobile(request.mobile());
+        if (customers.isEmpty()) {
+            return "User doesn't exist";
+        } else {
+            User user = customers.get(0);
+            if (request.otp() != user.getOtp()) {
+                return "Invalid otp";
+            }
+            User customer = new User();
+            customer.setVerified(1);
+            userRepository.save(customer);
+            return "Successfully verified";
+        }
+    }
 }
